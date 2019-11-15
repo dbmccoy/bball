@@ -9,8 +9,7 @@ public class Hex : MonoBehaviour
     GameObject hexObj;
     GameController gc;
 
-    public Ball ball;
-    public Player player;
+    public Character player;
 
     public float Cost = 1f;
 
@@ -21,9 +20,7 @@ public class Hex : MonoBehaviour
 
     public List<Flag> flags = new List<Flag>();
 
-    // Start is called before the first frame update
     private void Awake() {
-
         gc = GameController.Instance;
 
         hexObj = transform.Find("Cylinder").gameObject;
@@ -53,7 +50,7 @@ public class Hex : MonoBehaviour
     }
 
     private void LateUpdate() {
-        if (!isHighlight) {
+        if (!isHighlight && !persistentHighlight) {
             DeHighlight();
         }
         isHighlight = false;
@@ -64,8 +61,10 @@ public class Hex : MonoBehaviour
 
     public Hex Get(Dir d) {
         Hex hex = null;
-
-        if (!neighborDict.ContainsKey(d)) {
+        if (neighborDict.ContainsKey(d)) {
+            hex = neighborDict[d];
+        }
+        else {
             RaycastHit hitInfo;
 
             if(Physics.Raycast(new Ray(transform.position, DirV[d]), out hitInfo, .7f,Mouse.Instance.HexMask)) {
@@ -73,11 +72,10 @@ public class Hex : MonoBehaviour
                 if(hex != this) {
                     neighborDict[d] = hex;
                     neighbors.Add(hex);
-                    Debug.Log(neighbors.Count);
+                    //Debug.Log(Vector3.Distance(transform.position,hex.transform.position)/3f);
                 }
             }
         }
-
         return hex;
     }
 
@@ -108,19 +106,15 @@ public class Hex : MonoBehaviour
     bool isHighlight;
 
     Color initCol;
-    public void Highlight(Color c) {
+    bool persistentHighlight;
+    public void Highlight(Color c, bool persistent = false) {
+        persistentHighlight = persistent;
         mr.material.color = c;
         isHighlight = true;
     }
 
     public void DeHighlight() {
         mr.material.color = initCol;
-    }
-
-    public void SetBall(Ball b) {
-        b.hex.ball = null;
-        b.hex = this;
-        ball = b;
     }
 
     public static Dictionary<Dir, Vector3> DirV = new Dictionary<Dir, Vector3>() {

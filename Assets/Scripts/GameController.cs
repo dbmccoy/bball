@@ -17,24 +17,17 @@ public class GameController : MonoBehaviour
         }
     }
 
+    public Character playerCharPrefab;
+
+    public UnityEvent onEndTurn = new UnityEvent();
     public UnityEvent onNextTurn = new UnityEvent();
 
-    public class OnPossessionChange : UnityEvent<Team> { }
-    public OnPossessionChange onPossessionChange = new OnPossessionChange();
-
     public UnityEvent UnPause = new UnityEvent();
-    public UnityEvent NextActionEvent = new UnityEvent();
 
-    public Ball ball;
     public GameObject marker;
 
-    public List<Player> players = new List<Player>();
-    public List<Player> playersWithRemainingActions = new List<Player>();
-
-    public Team cpuTeam;
-    public Team playerTeam;
-
-    public Team teamWithPossession;
+    public List<Character> players = new List<Character>();
+    public List<Character> playerOrder = new List<Character>();
 
     public List<Hex> Hexes = new List<Hex>();
 
@@ -48,81 +41,70 @@ public class GameController : MonoBehaviour
         }
     }
 
+    Map map;
+    Character player;
+    Deck deck;
+
     // Start is called before the first frame update
     void Start()
     {
-        Invoke("StartGame", .2f);
-        marker = (GameObject)Resources.Load("marker");
-        onPossessionChange.AddListener(PossessionChange);
+        
     }
+
+    public void MapGenFinished() {
+        map = GameObject.Find("Floor").GetComponent<Map>();
+        player = Instantiate(playerCharPrefab) as Character;
+        Invoke("StartGame", .2f);
+        player.Teleport(map.GetHex(5, 5));
+        deck = GameObject.Find("Deck").GetComponent<Deck>();
+
+        marker = (GameObject)Resources.Load("marker");
+    }
+
+    public int turn = 0;
+    float turnTime;
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyUp(KeyCode.Space)) {
-            ExecuteTurn();
-        }
+            
+    }
 
-        if (isPaused) {
-            string s = "";
+    public void PlayerFinishedTurn(Character p) {
+        NextPlayer();
+    }
 
-            if (teamWithPossession) {
-                s = teamWithPossession.teamName;
-            }
-            else {
-                s = "loose ball";
-            }
-
-            string p = isPaused ? "PAUSED" : "ACTION";
-
-
-            GamePhase.text = "PLANNING: " + s + " " + p;
+    public void NextPlayer() {
+        if (playerOrder.Count == 0) {
+            EndTurn();
+            NextTurn();
         }
         else {
-            bool readyForNextAction = true;
-
-            foreach (var p in players) {
-                if (p.action != null && !p.action.isComplete) {
-                    readyForNextAction = false;
-                }
-            }
-
-            if (readyForNextAction) {
-                NextActionEvent.Invoke();
-            }
-
-            if(playersWithRemainingActions.Count == 0) {
-                NextTurn();
-            }
-            else {
-                //Debug.Log(playersWithRemainingActions.Count);
-            }
+            playerOrder.FirstOrDefault().TakeTurn();
         }
     }
 
     public void StartGame() {
-        ball = Ball.Instance;
-        ball.Shoot(ball.hex.RandomNeighbor(2));
         NextTurn();
     }
 
-    Hex ballLoc;
-
     public void ExecuteTurn() {
-        Ball.Instance.Teleport(ballLoc);
         TogglePause();
+    }
+
+    public void EndTurn() {
+        onEndTurn.Invoke();
     }
 
     public void NextTurn() {
-        Debug.Log("next turn");
-        ballLoc = Ball.Instance.hex;
-        playersWithRemainingActions = new List<Player>(players);
-        TogglePause();
-        onNextTurn.Invoke();
-    }
+        
+        turn++;
+        Debug.Log("starting turn " + turn);
+        playerOrder = new List<Character>(players);
 
-    public void PossessionChange(Team t) {
-        teamWithPossession = t;
+        //TogglePause();
+        //onNextTurn.Invoke();
+        NextPlayer();
     }
 
     public List<Hex> ReturnPath(Hex start, Hex goal, bool arrows = false, bool nodes = false, bool lazy = true) {

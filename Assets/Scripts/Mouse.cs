@@ -22,7 +22,7 @@ public class Mouse : MonoBehaviour
 
     public Mode mode;
 
-    public Player CurrentPlayer;
+    public Character CurrentPlayer;
 
     public GameObject SelectHex;
 
@@ -56,7 +56,7 @@ public class Mouse : MonoBehaviour
 
         if (Physics.Raycast(ray, out hitInfo, 100f, PlayerMask)) {
             if (Input.GetMouseButtonDown(0)) {
-                CurrentPlayer = hitInfo.transform.GetComponentInParent<Player>();
+                CurrentPlayer = hitInfo.transform.GetComponentInParent<Character>();
                 CurrentPlayer.Select();
                 Debug.Log("selected player");
             }
@@ -79,12 +79,6 @@ public class Mouse : MonoBehaviour
                     if(mode == Mode.move) {
                         CurrentPlayer.SetPath(CurrentPlayer.nav.Path);
                         CurrentPlayer.movePointsRemaining -= CurrentPlayer.nav.Path.Count;
-                    }
-                    if(mode == Mode.shoot) {
-                        CurrentPlayer.Shoot(Hex);
-                    }
-                    if(mode == Mode.pass) {
-                        CurrentPlayer.Pass(Hex.player);
                     }
                 }
             }

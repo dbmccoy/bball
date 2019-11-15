@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5595249331090197133}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.32, y: 0.42, z: 0}
+  m_LocalPosition: {x: 0, y: 0.42, z: 0.34}
   m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
   m_Children: []
   m_Father: {fileID: 8477132512395144393}
@@ -231,9 +231,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Hex: {fileID: 0}
   speed: 3
-  hasBall: 0
-  ballHolder: {fileID: 7019994627929987502}
+  movePoints: 0
+  movePointsRemaining: 0
+  onStartTurn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onCompleteTurn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   nav: {fileID: 0}
+  movePath: []
+  gc: {fileID: 0}
+  isSelected: 0
+  debugs: []
 --- !u!114 &8063302650739056839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -248,9 +262,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   CurrentNode: {fileID: 0}
+  ActualNode: {fileID: 0}
   GoalNode: {fileID: 0}
   NextNode: {fileID: 0}
   Path: []
   speed: 3
   turns: 0
   trail: 0
+  ghost: {fileID: 0}
+  GhostPath: []
+  marker: {fileID: 0}

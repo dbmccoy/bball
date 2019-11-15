@@ -1,17 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Map : MonoBehaviour
 {
 
     public GameObject hexPrefab;
 
-    int width = 22;
-    int height = 11;
+    int width = 25;
+    int height = 25;
 
     float xOffset = .442f * 2;
     float offRowYOffset = .762f;
+
+    public Dictionary<string, Hex> HexDict = new Dictionary<string, Hex>();
 
     // Start is called before the first frame update
     void Start()
@@ -27,8 +30,17 @@ public class Map : MonoBehaviour
 
                 var go = Instantiate(hexPrefab, new Vector3(xval,0,y * offRowYOffset), Quaternion.identity);
                 go.transform.name = "Hex_" + x + "_" + y;
+
+                HexDict.Add(x+","+y, go.GetComponent<Hex>());
             }
         }
+
+        GameController.Instance.MapGenFinished();
+    }
+
+    public Hex GetHex(int x, int y) {
+        Debug.Log(HexDict.ContainsKey(x + "," + y));
+        return HexDict[x+","+y];
     }
 
     // Update is called once per frame

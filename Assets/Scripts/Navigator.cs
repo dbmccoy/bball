@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Linq;
 
 public class Navigator : MonoBehaviour {
-    public Player player;
+    public Character player;
     public Hex CurrentNode;
     public Hex ActualNode;
     public Hex GoalNode;
@@ -17,7 +17,7 @@ public class Navigator : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
-        player = GetComponent<Player>();
+        player = GetComponent<Character>();
         //StartCoroutine(EndOfFrame());
     }
 
@@ -30,7 +30,7 @@ public class Navigator : MonoBehaviour {
     public void CreateGhost() {
         ghost = Instantiate(this.gameObject,transform.position,transform.rotation);
         ghost.GetComponentInChildren<MeshRenderer>().material.color = new Color(.5f, .5f, .5f, .5f);
-        ghost.GetComponent<Player>().enabled = false;
+        ghost.GetComponent<Character>().enabled = false;
     }
 
     public List<Hex> GhostPath = new List<Hex>();
